@@ -1,0 +1,19 @@
+# secrets
+.env
+
+# private notes and drafts: every markdown file except the README
+*.md
+!README.md
+
+# python / tooling
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
+
+# large or re-downloadable artifacts
+data/
+*.npy
+
+# NOTE: cache/jev/ is intentionally committed so anyone can rerun without paying

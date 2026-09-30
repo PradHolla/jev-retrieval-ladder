@@ -1,0 +1,11 @@
+{
+  "jev_model": "typesafe/jev-1.13-20260917",
+  "jev_endpoint": "https://openrouter.ai/api/v1/systemone",
+  "rubric": "A",
+  "rerank_depth": 30,
+  "rrf_k": 60,
+  "jev_threshold": 2.81,
+  "ce_threshold": 0.8283842206001282,
+  "dev_queries": 100,
+  "frozen_on": "2026-09-29"
+}
