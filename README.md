@@ -69,6 +69,46 @@ cross-encoder's is 0.517.
    mean absolute difference was 0.027 and the largest 0.09 on the 0-3 scale. The cached
    responses are what make these numbers reproducible.
 
+## End to end: does the better ranking give better answers?
+
+SciFact's real task is to decide whether the abstracts support a claim, contradict it, or say
+nothing. The original release has those labels (BEIR's 300 test claims are SciFact's labeled
+dev split: 124 SUPPORT, 64 CONTRADICT, 112 NOT_ENOUGH_INFO). Claude Haiku 5.5 read the
+passages each pipeline returned and gave one verdict per claim, from the abstracts only
+(effort `medium`, JSON schema output, prompt in [`ladder/verdict.py`](ladder/verdict.py)). The
+prompt was fixed before the dev check and the test set was run once.
+
+| Context handed to Claude | Accuracy [95% CI] | Evidence in context | Accuracy, NOT_ENOUGH_INFO claims | Input tokens per claim |
+|---|---|---|---|---|
+| Hybrid, top 3 | 0.787 [0.740, 0.833] | 0.910 | 0.759 | 2,139 |
+| Cross-encoder, top 3 | 0.790 [0.743, 0.837] | 0.926 | 0.759 | 2,338 |
+| Jev, top 3 | 0.777 [0.730, 0.823] | 0.957 | 0.679 | 2,116 |
+| Jev, score >= 2.81 (0.78 passages per claim) | 0.780 [0.733, 0.827] | 0.766 | 0.884 | 887 |
+| The cited abstracts (oracle) | 0.833 [0.790, 0.873] | 1.000 | 0.830 | 1,066 |
+
+"Evidence in context" is the share of the 188 claims with evidence whose context includes an
+abstract that holds it. Majority-class accuracy is 0.413.
+
+| Paired accuracy difference | All claims | Claims with evidence | NOT_ENOUGH_INFO claims |
+|---|---|---|---|
+| Jev minus cross-encoder | -0.013 [-0.057, +0.027] | +0.027 [-0.027, +0.080] | -0.080 [-0.143, -0.018] |
+| Jev threshold minus Jev top 3 | +0.003 [-0.047, +0.053] | -0.117 [-0.181, -0.059] | +0.205 [+0.134, +0.286] |
+| Cited abstracts minus Jev top 3 | +0.057 [+0.013, +0.100] | +0.000 [-0.048, +0.048] | +0.152 [+0.071, +0.232] |
+
+1. The ranking gain does not reach the answer. All three top-3 pipelines are within 1.3 points
+   of each other, and no paired difference excludes zero.
+2. Two effects cancel. Jev puts the evidence in front of Claude more often (0.957 vs 0.926),
+   and on claims with evidence Claude does as well with Jev's top 3 as with the cited
+   abstracts. On claims with no evidence, Jev's passages more often lead Claude to SUPPORT or
+   CONTRADICT, 8 points worse than the cross-encoder's, CI excluding zero. Jev's top 3 holds
+   the cited abstract no more often than the cross-encoder's (0.509 vs 0.527 of these claims),
+   so the extra errors come from other passages that read like evidence.
+3. The threshold trades the same thing the other way: right more often when there is nothing to
+   find, wrong more often when it drops the evidence. Overall accuracy is the same as Jev's top
+   3 with 58% fewer input tokens.
+4. Haiku 5.5's biosecurity classifier refused 3 to 6 claims per pipeline (virology and drug
+   resistance claims, refused whatever the context). Refusals count as wrong answers.
+
 ## Method
 
 - **Data.** BEIR SciFact: 5,183 abstracts, 300 test claims with human qrels (1.13 relevant per
@@ -108,6 +148,9 @@ cross-encoder's is 0.517.
 | Latency | 129 ms p50, 209 ms p95 per call via OpenRouter; calls run in parallel | 319 ms p50, 661 ms p95 per query of 30 pairs on an NVIDIA A10G |
 | Total spend for the project | $0.467 (dev tuning, test, checks) | one ~12 minute GPU run |
 
+The end-to-end check cost $0.39 in Claude Haiku 5.5 calls (dev and test, about $0.0003 per
+claim per pipeline).
+
 The latencies are measured on different kinds of setups (a hosted API against one rented
 GPU), so they are indicative only.
 
@@ -120,6 +163,8 @@ GPU), so they are indicative only.
   not tested.
 - Either model may have seen SciFact during training; this cannot be checked for Jev.
 - Jev's run-to-run variation is not included in the confidence intervals.
+- The end-to-end check uses one reader (Claude Haiku 5.5), one prompt, and one sample per call;
+  Haiku 5.5 does not accept a temperature, so its run-to-run variation is not in the CIs either.
 
 ## Reproduce
 
@@ -132,11 +177,15 @@ uv run python scripts/03_jev_dev.py      # Jev on dev, freezes config/frozen.jso
 uv run python scripts/04_jev_test.py     # Jev on test and the determinism check
 uv run python scripts/05_evaluate.py     # bootstrap CIs -> results/results.json
 uv run python scripts/06_plot.py         # figures/
+uv run python scripts/08_verdicts.py dev # Claude verdicts, prompt check on dev
+uv run python scripts/08_verdicts.py test
+uv run python scripts/09_evaluate_verdicts.py  # -> results/verdicts.json
 ```
 
-Every Jev response is cached in `cache/jev/`, so steps 03 and 04 run without an API key or cost.
-A new request needs `OPENROUTER_API_KEY=...` in a `.env` file at the repo root. All numbers in this
-README come from `results/results.json`.
+Every Jev response is cached in `cache/jev/` and every Claude response in `cache/claude/`, so
+these steps run without API keys or cost. A new request needs `OPENROUTER_API_KEY=...` or
+`ANTHROPIC_API_KEY=...` in a `.env` file at the repo root. All numbers in this README come from
+`results/results.json` and `results/verdicts.json`.
 
 ## Related
 

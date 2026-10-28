@@ -3,6 +3,7 @@
 import csv
 import json
 import random
+import tarfile
 import urllib.request
 import zipfile
 from collections import defaultdict
@@ -11,6 +12,11 @@ from ladder import ROOT
 
 SCIFACT_URL = "https://public.ukp.informatik.tu-darmstadt.de/thakur/BEIR/datasets/scifact.zip"
 SCIFACT_DIR = ROOT / "data" / "scifact"
+# The original release carries the SUPPORT/CONTRADICT labels that BEIR drops. BEIR's test split
+# is SciFact's labeled dev split (SciFact's own test labels are hidden).
+CLAIMS_URL = "https://scifact.s3-us-west-2.amazonaws.com/release/latest/data.tar.gz"
+CLAIMS_DIR = ROOT / "data" / "scifact_claims"
+CLAIM_FILES = {"train": "claims_train.jsonl", "test": "claims_dev.jsonl"}
 DEV_SIZE = 100
 DEV_SEED = 13
 
@@ -24,6 +30,33 @@ def download():
     with zipfile.ZipFile(zip_path) as zf:
         zf.extractall(SCIFACT_DIR.parent)
     zip_path.unlink()
+
+
+def download_claims():
+    if CLAIMS_DIR.exists():
+        return
+    tar_path = CLAIMS_DIR.with_suffix(".tar.gz")
+    urllib.request.urlretrieve(CLAIMS_URL, tar_path)
+    with tarfile.open(tar_path) as tf:
+        tf.extractall(CLAIMS_DIR, filter="data")
+    tar_path.unlink()
+
+
+def load_claims(split):
+    """split is "train" or "test". Returns query_id -> {"verdict", "evidence": [doc_id]}.
+
+    A claim with no rationale in any cited abstract is NOT_ENOUGH_INFO. No claim mixes
+    SUPPORT and CONTRADICT; the unpacking below fails if one ever does.
+    """
+    claims = {}
+    with open(CLAIMS_DIR / "data" / CLAIM_FILES[split]) as f:
+        for claim in map(json.loads, f):
+            labels = {e["label"] for rationales in claim["evidence"].values() for e in rationales}
+            verdict = "NOT_ENOUGH_INFO"
+            if labels:
+                (verdict,) = labels
+            claims[str(claim["id"])] = {"verdict": verdict, "evidence": list(claim["evidence"])}
+    return claims
 
 
 def load_corpus():

@@ -1,0 +1,213 @@
+{
+  "model": "claude-haiku-5-5",
+  "effort": "medium",
+  "context_size": 3,
+  "claims": 300,
+  "gold_counts": {
+    "SUPPORT": 124,
+    "CONTRADICT": 64,
+    "NOT_ENOUGH_INFO": 112
+  },
+  "majority_class_accuracy": 0.41333333333333333,
+  "claude_spend_usd": 0.3900586,
+  "systems": {
+    "hybrid": {
+      "accuracy": {
+        "mean": 0.7866666666666666,
+        "ci_low": 0.74,
+        "ci_high": 0.8333333333333334
+      },
+      "macro_f1": 0.7834535136421928,
+      "accuracy_by_gold": {
+        "SUPPORT": 0.8387096774193549,
+        "CONTRADICT": 0.734375,
+        "NOT_ENOUGH_INFO": 0.7589285714285714
+      },
+      "evidence_in_context": 0.9095744680851063,
+      "accuracy_evidence_in_context": 0.8187134502923976,
+      "accuracy_evidence_missing": 0.6470588235294118,
+      "cited_in_context_not_enough_info": 0.4732142857142857,
+      "refusals": 6,
+      "passages_per_claim": 3.0,
+      "input_tokens_per_claim": 2139.2233333333334,
+      "output_tokens_per_claim": 93.62333333333333,
+      "cost_per_claim_usd": 0.000260734,
+      "latency_ms_p50": 1313.55
+    },
+    "ce": {
+      "accuracy": {
+        "mean": 0.79,
+        "ci_low": 0.7433333333333333,
+        "ci_high": 0.8366666666666667
+      },
+      "macro_f1": 0.7909169169030864,
+      "accuracy_by_gold": {
+        "SUPPORT": 0.8306451612903226,
+        "CONTRADICT": 0.765625,
+        "NOT_ENOUGH_INFO": 0.7589285714285714
+      },
+      "evidence_in_context": 0.925531914893617,
+      "accuracy_evidence_in_context": 0.8218390804597702,
+      "accuracy_evidence_missing": 0.6428571428571429,
+      "cited_in_context_not_enough_info": 0.5267857142857143,
+      "refusals": 5,
+      "passages_per_claim": 3.0,
+      "input_tokens_per_claim": 2337.6066666666666,
+      "output_tokens_per_claim": 94.12,
+      "cost_per_claim_usd": 0.0002808206666666666,
+      "latency_ms_p50": 1316.85
+    },
+    "jev": {
+      "accuracy": {
+        "mean": 0.7766666666666666,
+        "ci_low": 0.73,
+        "ci_high": 0.8233333333333334
+      },
+      "macro_f1": 0.7797600182035471,
+      "accuracy_by_gold": {
+        "SUPPORT": 0.8387096774193549,
+        "CONTRADICT": 0.828125,
+        "NOT_ENOUGH_INFO": 0.6785714285714286
+      },
+      "evidence_in_context": 0.9574468085106383,
+      "accuracy_evidence_in_context": 0.8388888888888889,
+      "accuracy_evidence_missing": 0.75,
+      "cited_in_context_not_enough_info": 0.5089285714285714,
+      "refusals": 5,
+      "passages_per_claim": 3.0,
+      "input_tokens_per_claim": 2115.87,
+      "output_tokens_per_claim": 108.52333333333333,
+      "cost_per_claim_usd": 0.00026584866666666665,
+      "latency_ms_p50": 1321.5500000000002
+    },
+    "jev_threshold": {
+      "accuracy": {
+        "mean": 0.78,
+        "ci_low": 0.7333333333333333,
+        "ci_high": 0.8266666666666667
+      },
+      "macro_f1": 0.7749209854473014,
+      "accuracy_by_gold": {
+        "SUPPORT": 0.75,
+        "CONTRADICT": 0.65625,
+        "NOT_ENOUGH_INFO": 0.8839285714285714
+      },
+      "evidence_in_context": 0.7659574468085106,
+      "accuracy_evidence_in_context": 0.9027777777777778,
+      "accuracy_evidence_missing": 0.11363636363636363,
+      "cited_in_context_not_enough_info": 0.05357142857142857,
+      "refusals": 5,
+      "passages_per_claim": 0.7766666666666666,
+      "input_tokens_per_claim": 887.1433333333333,
+      "output_tokens_per_claim": 34.96666666666667,
+      "cost_per_claim_usd": 0.00010619766666666664,
+      "latency_ms_p50": 1168.05
+    },
+    "cited": {
+      "accuracy": {
+        "mean": 0.8333333333333334,
+        "ci_low": 0.79,
+        "ci_high": 0.8733333333333333
+      },
+      "macro_f1": 0.8312927774978971,
+      "accuracy_by_gold": {
+        "SUPPORT": 0.8467741935483871,
+        "CONTRADICT": 0.8125,
+        "NOT_ENOUGH_INFO": 0.8303571428571429
+      },
+      "evidence_in_context": 1.0,
+      "accuracy_evidence_in_context": 0.8351063829787234,
+      "accuracy_evidence_missing": null,
+      "cited_in_context_not_enough_info": 1.0,
+      "refusals": 3,
+      "passages_per_claim": 1.13,
+      "input_tokens_per_claim": 1066.2733333333333,
+      "output_tokens_per_claim": 70.25,
+      "cost_per_claim_usd": 0.00014175233333333333,
+      "latency_ms_p50": 1261.75
+    }
+  },
+  "deltas": {
+    "jev - ce": {
+      "mean": -0.013333333333333334,
+      "ci_low": -0.056666666666666664,
+      "ci_high": 0.02666666666666667
+    },
+    "jev - hybrid": {
+      "mean": -0.01,
+      "ci_low": -0.05,
+      "ci_high": 0.03
+    },
+    "ce - hybrid": {
+      "mean": 0.0033333333333333335,
+      "ci_low": -0.03666666666666667,
+      "ci_high": 0.04666666666666667
+    },
+    "jev_threshold - jev": {
+      "mean": 0.0033333333333333335,
+      "ci_low": -0.04666666666666667,
+      "ci_high": 0.05333333333333334
+    },
+    "cited - jev": {
+      "mean": 0.056666666666666664,
+      "ci_low": 0.013333333333333334,
+      "ci_high": 0.1
+    }
+  },
+  "deltas_by_evidence": {
+    "has_evidence": {
+      "jev - ce": {
+        "mean": 0.026595744680851064,
+        "ci_low": -0.026595744680851064,
+        "ci_high": 0.0797872340425532
+      },
+      "jev - hybrid": {
+        "mean": 0.031914893617021274,
+        "ci_low": -0.015957446808510637,
+        "ci_high": 0.0851063829787234
+      },
+      "ce - hybrid": {
+        "mean": 0.005319148936170213,
+        "ci_low": -0.047872340425531915,
+        "ci_high": 0.05851063829787234
+      },
+      "jev_threshold - jev": {
+        "mean": -0.11702127659574468,
+        "ci_low": -0.18085106382978725,
+        "ci_high": -0.05851063829787234
+      },
+      "cited - jev": {
+        "mean": 0.0,
+        "ci_low": -0.047872340425531915,
+        "ci_high": 0.047872340425531915
+      }
+    },
+    "not_enough_info": {
+      "jev - ce": {
+        "mean": -0.08035714285714286,
+        "ci_low": -0.14285714285714285,
+        "ci_high": -0.017857142857142856
+      },
+      "jev - hybrid": {
+        "mean": -0.08035714285714286,
+        "ci_low": -0.15178571428571427,
+        "ci_high": -0.008928571428571428
+      },
+      "ce - hybrid": {
+        "mean": 0.0,
+        "ci_low": -0.0625,
+        "ci_high": 0.0625
+      },
+      "jev_threshold - jev": {
+        "mean": 0.20535714285714285,
+        "ci_low": 0.13392857142857142,
+        "ci_high": 0.2857142857142857
+      },
+      "cited - jev": {
+        "mean": 0.15178571428571427,
+        "ci_low": 0.07142857142857142,
+        "ci_high": 0.23214285714285715
+      }
+    }
+  }
+}
